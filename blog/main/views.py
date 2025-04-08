@@ -1,27 +1,28 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.views.generic.list import ListView
 
 from main.models import Post
 
 
 # Create your views here.
 
-def post_list(request: HttpRequest) -> HttpResponse:
+class PostListView(ListView):
     """
-    Get all published posts
-    :param request:
-    :return:
+    View to list all published posts
     """
-    posts = Post.published.all()
-    return render(request, 'main/post/list.html', {'posts': posts})
+    queryset = Post.published.all()
+    context_object_name = 'posts'
+    paginate_by = 10
+    template_name = 'main/post/list.html'
 
 
-def post_detail(request: HttpRequest, id: int) -> HttpResponse:
+def post_detail(request: HttpRequest, slug: str) -> HttpResponse:
     """
     Get post details
+    :param slug:
     :param request:
-    :param id:
     :return:
     """
-    post = get_object_or_404(Post, id=id, status=Post.Status.PUBLISHED)
+    post = get_object_or_404(Post, slug=slug, status=Post.Status.PUBLISHED)
     return render(request, 'main/post/detail.html', {'post': post})
