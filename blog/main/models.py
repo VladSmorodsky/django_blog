@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf.global_settings import AUTH_USER_MODEL
 from django.db import models
 from django.urls.base import reverse
 from django.utils import timezone
@@ -18,6 +19,27 @@ class PublishedManager(models.Manager):
 
 
 # Create your models here.
+class UserProfile(models.Model):
+    """
+    User profile model
+    """
+    user = models.OneToOneField(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.username}"
+
+
+class Category(models.Model):
+    """
+    Category model
+    """
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
 
 class Post(models.Model):
     class Status(models.TextChoices):
@@ -39,6 +61,8 @@ class Post(models.Model):
         default=Status.DRAFT,
     )
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='blog_posts')
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name='blog_posts')
+
     objects = models.Manager()
     published = PublishedManager()
 
@@ -57,3 +81,24 @@ class Post(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title}"
+
+
+class Comment(models.Model):
+    """
+    Comment model
+    """
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['created_at']),
+        ]
+
+    def __str__(self) -> str:
+        return f"Comment by {self.name} on {self.post}"

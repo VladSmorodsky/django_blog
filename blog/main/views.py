@@ -1,8 +1,11 @@
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.list import ListView
 
-from main.models import Post
+from main.forms import LoginForm, RegisterForm
+from main.models import Post, UserProfile
 
 
 # Create your views here.
@@ -26,3 +29,59 @@ def post_detail(request: HttpRequest, slug: str) -> HttpResponse:
     """
     post = get_object_or_404(Post, slug=slug, status=Post.Status.PUBLISHED)
     return render(request, 'main/post/detail.html', {'post': post})
+
+
+def login_view(request: HttpRequest) -> HttpResponse:
+    """
+    Login view
+    :param request:
+    :return:
+    """
+    if request.user.is_authenticated:
+        return redirect('post_list')
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request=request, username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return redirect("post_list")
+    else:
+        form = LoginForm()
+    return render(request, 'main/account/auth_page.html', {'form': form, 'auth_form_action': 'Login'})
+
+
+def register_view(request: HttpRequest) -> HttpResponse:
+    """
+    Register a new user
+    :param request:
+    :return:
+    """
+    if request.user.is_authenticated:
+        return redirect("post_list")
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data["password"])
+            user.save()
+            UserProfile.objects.create(user=user)
+            login(request, user)
+            return redirect('post_list')
+    else:
+        form = RegisterForm()
+    return render(request, 'main/account/auth_page.html', {'form': form, 'auth_form_action': 'Register'})
+
+
+@login_required
+def logout_view(request: HttpRequest) -> HttpResponse:
+    """
+    Logout a user
+    :param request:
+    :return:
+    """
+    logout(request)
+    return redirect("login")
