@@ -6,7 +6,7 @@ from django.views.generic.list import ListView
 from django.contrib import messages
 
 from main.forms import LoginForm, RegisterForm
-from main.models import Post, UserProfile
+from main.models import Post, UserProfile, Comment
 from main.utils import send_register_email
 
 
@@ -30,7 +30,8 @@ def post_detail(request: HttpRequest, slug: str) -> HttpResponse:
     :return:
     """
     post = get_object_or_404(Post, slug=slug, status=Post.Status.PUBLISHED)
-    return render(request, 'main/post/detail.html', {'post': post})
+    comments = Comment.objects.filter(post=post)
+    return render(request, 'main/post/detail.html', {'post': post, 'comments': comments})
 
 
 def login_view(request: HttpRequest) -> HttpResponse:

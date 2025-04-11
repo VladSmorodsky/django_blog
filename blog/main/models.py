@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.conf.global_settings import AUTH_USER_MODEL
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls.base import reverse
 from django.utils import timezone
+from tinymce.models import HTMLField
 
 
 class PublishedManager(models.Manager):
@@ -50,7 +52,7 @@ class Post(models.Model):
         PUBLISHED = 'PB', 'Published'
 
     title = models.CharField(max_length=100)
-    content = models.TextField()
+    content = HTMLField()
     slug = models.SlugField(max_length=100, unique_for_date='published_at')
     published_at = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -88,8 +90,7 @@ class Comment(models.Model):
     Comment model
     """
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -101,4 +102,4 @@ class Comment(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"Comment by {self.name} on {self.post}"
+        return f"Comment by {self.author} on {self.post}"

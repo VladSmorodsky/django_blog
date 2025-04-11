@@ -5,5 +5,42 @@
     <p class="date">
         Published {{ post.published_at }} by {{ post.author }}
     </p>
-    {{ post.content|linebreaks }}
+    {{ post.content|safe }}
+    <div class="my-5">
+        <h4 class="mb-4">Comments</h4>
+
+        <!-- Existing comments -->
+        <div class="mb-4">
+            {% for comment in comments %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-subtitle text-muted mb-1">
+                            {{ comment.author.username }} | {{ comment.created_at|date:"M d, Y H:i" }}
+                        </h6>
+                        <p class="card-text">{{ comment.content }}</p>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+{#        {% if user.is_authenticated %}#}
+{##}
+{#        {% endif %}#}
+
+        {#        <!-- Comment form -->#}
+        {#        <div class="card">#}
+        {#            <div class="card-body">#}
+        {#                <h5 class="card-title mb-3">Leave a comment</h5>#}
+        {#                <form method="post">#}
+        {#                    {% csrf_token %}#}
+        {#                    <div class="mb-3">#}
+        {#                        {{ form.text.label_tag }}#}
+        {#                        {{ form.text|add_class:"form-control" }}#}
+        {#                    </div>#}
+        {#                    <button type="submit" class="btn btn-primary">Post Comment</button>#}
+        {#                </form>#}
+        {#            </div>#}
+        {#        </div>#}
+    </div>
 {% endblock %}
