@@ -113,7 +113,7 @@ def add_comment_view(request: HttpRequest, slug: str) -> HttpResponse:
             comment.post = post
             comment.author = request.user
             comment.save()
-            send_published_comment_email(request, post)
+            send_published_comment_email(post)
             messages.success(request, "Your comment added!")
             return redirect("post_detail", post.slug)
     else:

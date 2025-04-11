@@ -18,13 +18,12 @@ def send_register_email(request: HttpRequest, user: User) -> None:
     send_mail(subject, content, settings.EMAIL_HOST_USER, [user.email])
 
 
-def send_published_comment_email(request: HttpRequest, post: Post) -> None:
+def send_published_comment_email(post: Post) -> None:
     """
     Sending to post's author email about published comment
-    :param request:
     :param post:
     :return:
     """
     subject = f"Added comment to post {post.title}!"
-    content = f"Dear {post.author.username}! New comment was added to you post: {post.title}!"
+    content = f"Dear {post.author.username}! New comment was added to your post: '{post.title}'!"
     send_mail(subject, content, settings.EMAIL_HOST_USER, [post.author.email])
