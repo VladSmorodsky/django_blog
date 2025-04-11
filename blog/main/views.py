@@ -6,6 +6,7 @@ from django.views.generic.list import ListView
 
 from main.forms import LoginForm, RegisterForm
 from main.models import Post, UserProfile
+from main.utils import send_register_email
 
 
 # Create your views here.
@@ -70,6 +71,7 @@ def register_view(request: HttpRequest) -> HttpResponse:
             user.save()
             UserProfile.objects.create(user=user)
             login(request, user)
+            send_register_email(request, user)
             return redirect('post_list')
     else:
         form = RegisterForm()
