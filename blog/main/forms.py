@@ -4,6 +4,8 @@ from typing import Union, Any
 from django import forms
 from django.contrib.auth.models import User
 
+from main.models import Comment
+
 
 def validate_password(password: str) -> None:
     """
@@ -82,3 +84,24 @@ class RegisterForm(forms.ModelForm):
         password_confirmed = cleaned_data.get("password2")
         validate_password_confirmation(password, password_confirmed)
         return cleaned_data
+
+
+class CommentForm(forms.ModelForm):
+    """
+    Form for commenting
+    """
+    content = forms.CharField(widget=forms.Textarea())
+
+    class Meta:
+        model = Comment
+        fields = ('content',)
+
+    def clean_content(self) -> Union[dict[str, Any] | None]:
+        """
+        Validate comment
+        :return:
+        """
+        content = self.cleaned_data.get('content')
+        if not content or content.strip() == '':
+            raise forms.ValidationError('Content is empty')
+        return content

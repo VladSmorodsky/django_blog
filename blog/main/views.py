@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.list import ListView
 from django.contrib import messages
 
-from main.forms import LoginForm, RegisterForm
+from main.forms import LoginForm, RegisterForm, CommentForm
 from main.models import Post, UserProfile, Comment
 from main.utils import send_register_email
 
@@ -95,3 +95,26 @@ def logout_view(request: HttpRequest) -> HttpResponse:
     """
     logout(request)
     return redirect("login")
+
+
+@login_required
+def add_comment_view(request: HttpRequest, slug: str) -> HttpResponse:
+    """
+    Add comment to post
+    :param request:
+    :param slug:
+    :return:
+    """
+    post = get_object_or_404(Post, slug=slug, status=Post.Status.PUBLISHED)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            messages.success(request, "Your comment added!")
+            return redirect("post_detail", post.slug)
+    else:
+        form = CommentForm()
+    return render(request, 'main/comment/add_comment.html', {'form': form})

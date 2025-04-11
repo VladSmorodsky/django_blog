@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Add comment{% endblock %}
+
+{% block content %}
+    <h2>Add comment</h2>
+    <form method="post">
+        {% include 'components/forms/form_content.html' with form=form %}
+        {% include 'components/messages.html' with messages=messages %}
+        <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg btn-block"
+                type="submit">Add comment
+        </button>
+    </form>
+{% endblock %}
