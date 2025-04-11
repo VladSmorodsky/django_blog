@@ -11,6 +11,7 @@
                         <h3 class="mb-5">{{ auth_form_action|default:'Register' }}</h3>
                         <form method="post">
                             {% include 'components/forms/form_content.html' with form=form %}
+                            {% include 'components/messages.html' with messages=messages %}
                             <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg btn-block"
                                     type="submit">{{ auth_form_action|default:'Register' }}
                             </button>

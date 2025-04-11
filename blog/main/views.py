@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.list import ListView
+from django.contrib import messages
 
 from main.forms import LoginForm, RegisterForm
 from main.models import Post, UserProfile
@@ -45,11 +46,17 @@ def login_view(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = authenticate(request=request, username=username, password=password)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect("post_list")
+            try:
+                user = authenticate(request=request, username=username, password=password)
+                if user is not None:
+                    if user.is_active:
+                        login(request, user)
+                        messages.success(request, "You are now logged in")
+                        return redirect("post_list")
+                else:
+                    messages.error(request, "Invalid username or password")
+            except AttributeError:
+                messages.error(request, "Invalid username or password")
     else:
         form = LoginForm()
     return render(request, 'main/account/auth_page.html', {'form': form, 'auth_form_action': 'Login'})
