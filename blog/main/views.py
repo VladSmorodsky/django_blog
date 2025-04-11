@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from main.forms import LoginForm, RegisterForm, CommentForm
 from main.models import Post, UserProfile, Comment
-from main.utils import send_register_email
+from main.utils import send_register_email, send_published_comment_email
 
 
 # Create your views here.
@@ -113,6 +113,7 @@ def add_comment_view(request: HttpRequest, slug: str) -> HttpResponse:
             comment.post = post
             comment.author = request.user
             comment.save()
+            send_published_comment_email(request, post)
             messages.success(request, "Your comment added!")
             return redirect("post_detail", post.slug)
     else:
