@@ -7,12 +7,12 @@
     {% if tag %}
         <h2>Posts tagged with "{{ tag.name }}"</h2>
     {% endif %}
-    {% for post in posts %}
-        <div class="col-md-6 col-lg-4">
+    <div class="d-flex flex-column flex-md-row gap-3">
+        {% for post in posts %}
             {% include "components/post_card.html" with post=post %}
-        </div>
-    {% empty %}
-        <p>No posts found.</p>
-    {% endfor %}
+        {% empty %}
+            <p>No posts found.</p>
+        {% endfor %}
+    </div>
     {% include 'pagination.html' with page=posts %}
 {% endblock %}

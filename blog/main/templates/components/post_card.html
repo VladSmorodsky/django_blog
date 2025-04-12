@@ -1,4 +1,4 @@
-<div class="card mb-4 shadow-sm">
+<div class="card flex-fill mb-4 shadow-sm col-12 col-md-6 col-lg-3">
     <div class="card-body">
         <h5 class="card-title">
             <a href="{% url 'post_detail' post.slug %}" class="text-decoration-none text-primary">
@@ -9,6 +9,8 @@
             {{ post.content|truncatewords:25|safe }}
         </p>
         <p>Tags: {{ post.tags.all|join:', ' }}</p>
+    </div>
+    <div class="card-footer text-muted">
         <div class="d-flex justify-content-between align-items-center">
             <small class="text-muted">Published on {{ post.published_at|date:"F j, Y" }}</small>
             <a href="{% url 'post_detail' post.slug %}" class="btn btn-sm btn-outline-primary">Read more</a>
