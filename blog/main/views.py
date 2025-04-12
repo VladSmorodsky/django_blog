@@ -1,9 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic.list import ListView
 from django.contrib import messages
+from taggit.models import Tag
 
 from main.forms import LoginForm, RegisterForm, CommentForm
 from main.models import Post, UserProfile, Comment
@@ -12,14 +13,31 @@ from main.utils import send_register_email, send_published_comment_email
 
 # Create your views here.
 
-class PostListView(ListView):
+def post_list(request: HttpRequest, tag_slug=None) -> HttpResponse:
     """
     View to list all published posts
+    :param request:
+    :param tag_slug:
+    :return:
     """
-    queryset = Post.published.all()
-    context_object_name = 'posts'
-    paginate_by = 10
-    template_name = 'main/post/list.html'
+    tag = None
+    post_list = Post.published.all()
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        post_list = post_list.filter(tags__in=[tag])
+
+    paginator = Paginator(post_list, 9)
+    page = request.GET.get('page', 1)
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+    return render(request, 'main/post/list.html', {
+        'posts': posts,
+        'tag': tag,
+    })
 
 
 def post_detail(request: HttpRequest, slug: str) -> HttpResponse:

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'tinymce',
+    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -149,4 +150,3 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
-

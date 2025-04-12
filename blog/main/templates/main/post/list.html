@@ -4,16 +4,15 @@
 
 {% block content %}
     <h1 class="pb-3">My Blog</h1>
+    {% if tag %}
+        <h2>Posts tagged with "{{ tag.name }}"</h2>
+    {% endif %}
     {% for post in posts %}
-        <h2>
-            <a href="{{ post.get_absolute_url }}">
-                {{ post.title }}
-            </a>
-        </h2>
-        <p class="date">
-            Published {{ post.published_at }} by {{ post.author }}
-        </p>
-        {{ post.content|truncatewords:30|safe }}
+        <div class="col-md-6 col-lg-4">
+            {% include "components/post_card.html" with post=post %}
+        </div>
+    {% empty %}
+        <p>No posts found.</p>
     {% endfor %}
-    {% include 'pagination.html' with page=page_obj %}
+    {% include 'pagination.html' with page=posts %}
 {% endblock %}

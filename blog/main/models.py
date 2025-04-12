@@ -5,6 +5,7 @@ from django.db import models
 from django.urls.base import reverse
 from django.utils import timezone
 from tinymce.models import HTMLField
+from taggit.managers import TaggableManager
 
 
 class PublishedManager(models.Manager):
@@ -66,6 +67,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name='blog_posts')
 
     objects = models.Manager()
+    tags = TaggableManager()
     published = PublishedManager()
 
     class Meta:
