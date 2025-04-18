@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block page_title %}Blog{% endblock %}
+
+{% block content %}
+    <h1 class="pb-3">My Blog</h1>
+    {% if tag %}
+        <h2>Posts tagged with "{{ tag.name }}"</h2>
+    {% endif %}
+    <div class="d-flex flex-column flex-md-row gap-3">
+        {% for post in posts %}
+            {% include "components/post_card.html" with post=post %}
+        {% empty %}
+            <p>No posts found.</p>
+        {% endfor %}
+    </div>
+    {% include 'pagination.html' with page=posts %}
+{% endblock %}
